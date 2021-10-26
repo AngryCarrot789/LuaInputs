@@ -1,0 +1,47 @@
+﻿<Window x:Class="LuaInputs.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:LuaInputs"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
+        Height="500"
+        Title="MainWindow"
+        Width="800"
+        Style="{DynamicResource CustomWindowStyle}">
+    <Grid>
+        <Border Height="41" VerticalAlignment="Top" BorderBrush="{DynamicResource REghZyBrush.Deep.1.Border}" BorderThickness="0 0 0 1">
+            <Grid Background="{DynamicResource REghZyBrush.Deep.3.Background}">
+                <Button Content="Open" Margin="3,3,0,3" HorizontalAlignment="Left" Width="45" Command="{Binding CodeEditor.OpenFileCommand, Mode=OneTime}"/>
+                <Button Content="Save" Margin="51,3,0,3" HorizontalAlignment="Left" Width="45" Command="{Binding CodeEditor.SaveFileCommand, Mode=OneTime}"/>
+                <Button Content="Save As" Margin="99,3,0,3" HorizontalAlignment="Left" Width="55" Command="{Binding CodeEditor.SaveFileAsCommand, Mode=OneTime}"/>
+                <Button Content="Register LUA" Background="#FF2DAF19" BorderBrush="#FF196419" Margin="157,3,0,3" HorizontalAlignment="Left" Width="90"
+                        ToolTip="Registers all LUA code"/>
+                <Button Content="Unregister LUA" Background="#FFAF2D19" BorderBrush="#FF641919" Margin="250,3,0,3" HorizontalAlignment="Left" Width="100"
+                        ToolTip="Unregisters all LUA code, stopping it from running/receiving callbacks"/>
+            </Grid>
+        </Border>
+        <Grid Margin="0,41,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5*"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+            <TextBox x:Name="textEditor" BorderThickness="0" FontFamily="Consolas" 
+                     Background="{DynamicResource REghZyBrush.Deep.1.Background}" Grid.RowSpan="2"/>
+            <GridSplitter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1" 
+                          Background="{DynamicResource REghZyBrush.Deep.3.Background}"/>
+            <TextBox x:Name="consoleBox" BorderThickness="0" FontFamily="Consolas" 
+                     Background="{DynamicResource REghZyBrush.Deep.2.Background}"
+                     BorderBrush="{DynamicResource REghZyBrush.Deep.1.Border}" 
+                     Grid.Row="2" IsReadOnly="True">
+                <TextBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Clear" Command="{Binding CodeEditor.ClearConsoleCommand, Mode=OneTime}"/>
+                    </ContextMenu>
+                </TextBox.ContextMenu>
+            </TextBox>
+        </Grid>
+    </Grid>
+</Window>
