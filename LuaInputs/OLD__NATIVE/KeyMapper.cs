@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 
 namespace LuaInputs.OLD__NATIVE {
-    internal enum VirtualKeys : short {
+    public enum VirtualKeys : short {
 
     }
 

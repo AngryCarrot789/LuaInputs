@@ -3,7 +3,7 @@
 namespace LuaInputs.OLD__NATIVE {
     public class InputEventArg : EventArgs {
         public InputEventArg(KeyPressEvent arg) {
-            KeyPressEvent = arg;
+            this.KeyPressEvent = arg;
         }
 
         private InputEventArg() { }

@@ -67,19 +67,19 @@ namespace LuaInputs.OLD__NATIVE {
         }
 
         public static int HiWord(long dwValue) {
-            return (int) (dwValue >> 16) & ~FAPPCOMMANDMASK;
+            return (int)(dwValue >> 16) & ~FAPPCOMMANDMASK;
         }
 
         public static ushort LowWord(uint val) {
-            return (ushort) val;
+            return (ushort)val;
         }
 
         public static ushort HighWord(uint val) {
-            return (ushort) (val >> 16);
+            return (ushort)(val >> 16);
         }
 
         public static uint BuildWParam(ushort low, ushort high) {
-            return ((uint) high << 16) | (uint) low;
+            return ((uint)high << 16) | (uint)low;
         }
 
         public static string GetDeviceType(uint device) {

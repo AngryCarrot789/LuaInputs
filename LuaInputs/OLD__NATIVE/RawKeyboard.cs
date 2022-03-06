@@ -24,14 +24,14 @@ namespace LuaInputs.OLD__NATIVE {
             rid[0].Flags = RawInputDeviceFlags.INPUTSINK;
             rid[0].Target = hwnd;
 
-            if (!Win32.RegisterRawInputDevices(rid, (uint) rid.Length, (uint) Marshal.SizeOf(rid[0]))) {
+            if (!Win32.RegisterRawInputDevices(rid, (uint)rid.Length, (uint)Marshal.SizeOf(rid[0]))) {
                 throw new ApplicationException("Failed to register raw input device(s).");
             }
         }
 
         public void EnumerateDevices() {
-            lock (_padLock) {
-                _deviceList.Clear();
+            lock (this._padLock) {
+                this._deviceList.Clear();
 
                 int keyboardNumber = 0;
 
@@ -43,28 +43,28 @@ namespace LuaInputs.OLD__NATIVE {
                     Source = keyboardNumber++.ToString(CultureInfo.InvariantCulture)
                 };
 
-                _deviceList.Add(globalDevice.DeviceHandle, globalDevice);
+                this._deviceList.Add(globalDevice.DeviceHandle, globalDevice);
 
                 int numberOfDevices = 0;
                 uint deviceCount = 0;
                 int dwSize = (Marshal.SizeOf(typeof(Rawinputdevicelist)));
 
-                if (Win32.GetRawInputDeviceList(IntPtr.Zero, ref deviceCount, (uint) dwSize) == 0) {
-                    IntPtr pRawInputDeviceList = Marshal.AllocHGlobal((int) (dwSize * deviceCount));
-                    Win32.GetRawInputDeviceList(pRawInputDeviceList, ref deviceCount, (uint) dwSize);
+                if (Win32.GetRawInputDeviceList(IntPtr.Zero, ref deviceCount, (uint)dwSize) == 0) {
+                    IntPtr pRawInputDeviceList = Marshal.AllocHGlobal((int)(dwSize * deviceCount));
+                    Win32.GetRawInputDeviceList(pRawInputDeviceList, ref deviceCount, (uint)dwSize);
 
                     for (int i = 0; i < deviceCount; i++) {
                         uint pcbSize = 0;
 
                         // On Window 8 64bit when compiling against .Net > 3.5 using .ToInt32 you will generate an arithmetic overflow. Leave as it is for 32bit/64bit applications
-                        Rawinputdevicelist rid = (Rawinputdevicelist) Marshal.PtrToStructure(new IntPtr((pRawInputDeviceList.ToInt64() + (dwSize * i))), typeof(Rawinputdevicelist));
+                        Rawinputdevicelist rid = (Rawinputdevicelist)Marshal.PtrToStructure(new IntPtr((pRawInputDeviceList.ToInt64() + (dwSize * i))), typeof(Rawinputdevicelist));
 
                         Win32.GetRawInputDeviceInfo(rid.hDevice, RawInputDeviceInfo.RIDI_DEVICENAME, IntPtr.Zero, ref pcbSize);
 
                         if (pcbSize <= 0)
                             continue;
 
-                        IntPtr pData = Marshal.AllocHGlobal((int) pcbSize);
+                        IntPtr pData = Marshal.AllocHGlobal((int)pcbSize);
                         Win32.GetRawInputDeviceInfo(rid.hDevice, RawInputDeviceInfo.RIDI_DEVICENAME, pData, ref pcbSize);
                         string deviceName = Marshal.PtrToStringAnsi(pData);
 
@@ -79,9 +79,9 @@ namespace LuaInputs.OLD__NATIVE {
                                 Source = keyboardNumber++.ToString(CultureInfo.InvariantCulture)
                             };
 
-                            if (!_deviceList.ContainsKey(rid.hDevice)) {
+                            if (!this._deviceList.ContainsKey(rid.hDevice)) {
                                 numberOfDevices++;
-                                _deviceList.Add(rid.hDevice, dInfo);
+                                this._deviceList.Add(rid.hDevice, dInfo);
                             }
                         }
 
@@ -90,19 +90,19 @@ namespace LuaInputs.OLD__NATIVE {
 
                     Marshal.FreeHGlobal(pRawInputDeviceList);
 
-                    NumberOfKeyboards = numberOfDevices;
-                    Debug.WriteLine("EnumerateDevices() found {0} Keyboard(s)", NumberOfKeyboards);
+                    this.NumberOfKeyboards = numberOfDevices;
+                    Debug.WriteLine("EnumerateDevices() found {0} Keyboard(s)", this.NumberOfKeyboards);
                     return;
                 }
             }
 
             throw new Win32Exception(Marshal.GetLastWin32Error());
         }
-        
+
         public bool ProcessRawInput(IntPtr hdevice) {
-            if (_deviceList.Count == 0)
+            if (this._deviceList.Count == 0)
                 return false;
-            if (CaptureOnlyIfTopMostWindow && !Win32.InputInForeground(_rawBuffer.header.wParam))
+            if (this.CaptureOnlyIfTopMostWindow && !Win32.InputInForeground(_rawBuffer.header.wParam))
                 return false;
 
             int dwSize = 0;
@@ -124,9 +124,9 @@ namespace LuaInputs.OLD__NATIVE {
 
             KeyPressEvent keyPressEvent;
 
-            if (_deviceList.ContainsKey(_rawBuffer.header.hDevice)) {
-                lock (_padLock) {
-                    keyPressEvent = _deviceList[_rawBuffer.header.hDevice];
+            if (this._deviceList.ContainsKey(_rawBuffer.header.hDevice)) {
+                lock (this._padLock) {
+                    keyPressEvent = this._deviceList[_rawBuffer.header.hDevice];
                 }
             }
             else {

@@ -12,7 +12,7 @@ namespace LuaInputs.OLD__NATIVE {
         public const int RimTypeHid = 2;
     }
 
-    internal enum RawInputDeviceInfo : uint {
+    public enum RawInputDeviceInfo : uint {
         RIDI_DEVICENAME = 0x20000007,
         RIDI_DEVICEINFO = 0x2000000b,
         PREPARSEDDATA = 0x20000005
@@ -41,7 +41,7 @@ namespace LuaInputs.OLD__NATIVE {
     }
 
     [Flags]
-    internal enum RawInputDeviceFlags {
+    public enum RawInputDeviceFlags {
         /// <summary>No flags.</summary>
         NONE = 0,
         /// <summary>If set, this removes the top level collection from the inclusion list. This tells the operating system to stop reading from a device which matches the top level collection.</summary>

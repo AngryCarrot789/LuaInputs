@@ -28,7 +28,7 @@ namespace LuaInputs.OLD__NATIVE {
         public bool HasHorizontalWheel;         // True is mouse has wheel for horizontal scrolling else false.
 
         public override string ToString() {
-            return string.Format("MouseInfo\n Id: {0}\n NumberOfButtons: {1}\n SampleRate: {2}\n HorizontalWheel: {3}\n", Id, NumberOfButtons, SampleRate, HasHorizontalWheel);
+            return string.Format("MouseInfo\n Id: {0}\n NumberOfButtons: {1}\n SampleRate: {2}\n HorizontalWheel: {3}\n", this.Id, this.NumberOfButtons, this.SampleRate, this.HasHorizontalWheel);
         }
     }
 
@@ -41,7 +41,7 @@ namespace LuaInputs.OLD__NATIVE {
         public uint NumberOfKeysTotal;          // Total number of keys on the keyboard
 
         public override string ToString() {
-            return string.Format("DeviceInfoKeyboard\n Type: {0}\n SubType: {1}\n KeyboardMode: {2}\n NumberOfFunctionKeys: {3}\n NumberOfIndicators {4}\n NumberOfKeysTotal: {5}\n", Type, SubType, KeyboardMode, NumberOfFunctionKeys, NumberOfIndicators, NumberOfKeysTotal);
+            return string.Format("DeviceInfoKeyboard\n Type: {0}\n SubType: {1}\n KeyboardMode: {2}\n NumberOfFunctionKeys: {3}\n NumberOfIndicators {4}\n NumberOfKeysTotal: {5}\n", this.Type, this.SubType, this.KeyboardMode, this.NumberOfFunctionKeys, this.NumberOfIndicators, this.NumberOfKeysTotal);
         }
     }
 
@@ -53,7 +53,7 @@ namespace LuaInputs.OLD__NATIVE {
         public ushort Usage;                    // Top-level collection Usage for the device
 
         public override string ToString() {
-            return string.Format("HidInfo\n VendorID: {0}\n ProductID: {1}\n VersionNumber: {2}\n UsagePage: {3}\n Usage: {4}\n", VendorID, ProductID, VersionNumber, UsagePage, Usage);
+            return string.Format("HidInfo\n VendorID: {0}\n ProductID: {1}\n VersionNumber: {2}\n UsagePage: {3}\n Usage: {4}\n", this.VendorID, this.ProductID, this.VersionNumber, this.UsagePage, this.Usage);
         }
     }
 
@@ -66,7 +66,7 @@ namespace LuaInputs.OLD__NATIVE {
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct Rawinputdevicelist {
+    public struct Rawinputdevicelist {
         public IntPtr hDevice;
         public uint dwType;
     }
@@ -74,11 +74,11 @@ namespace LuaInputs.OLD__NATIVE {
     [StructLayout(LayoutKind.Explicit)]
     public struct RawData {
         [FieldOffset(0)]
-        internal Rawmouse mouse;
+        public Rawmouse mouse;
         [FieldOffset(0)]
-        internal Rawkeyboard keyboard;
+        public Rawkeyboard keyboard;
         [FieldOffset(0)]
-        internal Rawhid hid;
+        public Rawhid hid;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -95,23 +95,23 @@ namespace LuaInputs.OLD__NATIVE {
         public IntPtr wParam;                   // RIM_INPUT 0 if input occurred while application was in the foreground else RIM_INPUTSINK 1 if it was not.
 
         public override string ToString() {
-            return string.Format("RawInputHeader\n dwType : {0}\n dwSize : {1}\n hDevice : {2}\n wParam : {3}", dwType, dwSize, hDevice, wParam);
+            return string.Format("RawInputHeader\n dwType : {0}\n dwSize : {1}\n hDevice : {2}\n wParam : {3}", this.dwType, this.dwSize, this.hDevice, this.wParam);
         }
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct Rawhid {
+    public struct Rawhid {
         public uint dwSizHid;
         public uint dwCount;
         public byte bRawData;
 
         public override string ToString() {
-            return string.Format("Rawhib\n dwSizeHid : {0}\n dwCount : {1}\n bRawData : {2}\n", dwSizHid, dwCount, bRawData);
+            return string.Format("Rawhib\n dwSizeHid : {0}\n dwCount : {1}\n bRawData : {2}\n", this.dwSizHid, this.dwCount, this.bRawData);
         }
     }
 
     [StructLayout(LayoutKind.Explicit)]
-    internal struct Rawmouse {
+    public struct Rawmouse {
         [FieldOffset(0)]
         public ushort usFlags;
         [FieldOffset(4)]
@@ -131,7 +131,7 @@ namespace LuaInputs.OLD__NATIVE {
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct Rawkeyboard {
+    public struct Rawkeyboard {
         public ushort Makecode;                 // Scan code from the key depression
         public ushort Flags;                    // One or more of RI_KEY_MAKE, RI_KEY_BREAK, RI_KEY_E0, RI_KEY_E1
         public ushort Reserved;                 // Always 0    
@@ -141,19 +141,19 @@ namespace LuaInputs.OLD__NATIVE {
 
         public override string ToString() {
             return string.Format("Rawkeyboard\n Makecode: {0}\n Makecode(hex) : {0:X}\n Flags: {1}\n Reserved: {2}\n VKeyName: {3}\n Message: {4}\n ExtraInformation {5}\n",
-                                                Makecode, Flags, Reserved, VKey, Message, ExtraInformation);
+                                                this.Makecode, this.Flags, this.Reserved, this.VKey, this.Message, this.ExtraInformation);
         }
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct RawInputDevice {
-        internal HidUsagePage UsagePage;
-        internal HidUsage Usage;
-        internal RawInputDeviceFlags Flags;
-        internal IntPtr Target;
+    public struct RawInputDevice {
+        public HidUsagePage UsagePage;
+        public HidUsage Usage;
+        public RawInputDeviceFlags Flags;
+        public IntPtr Target;
 
         public override string ToString() {
-            return string.Format("{0}/{1}, flags: {2}, target: {3}", UsagePage, Usage, Flags, Target);
+            return string.Format("{0}/{1}, flags: {2}, target: {3}", this.UsagePage, this.Usage, this.Flags, this.Target);
         }
     }
 }

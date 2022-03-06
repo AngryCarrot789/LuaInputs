@@ -12,7 +12,7 @@ namespace LuaInputs.OLD__NATIVE {
 
         static internal string GetClassType(string classGuid) {
             RegistryKey classGuidKey = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Class\" + classGuid);
-            return classGuidKey != null ? (string) classGuidKey.GetValue("Class") : string.Empty;
+            return classGuidKey != null ? (string)classGuidKey.GetValue("Class") : string.Empty;
         }
     }
 }

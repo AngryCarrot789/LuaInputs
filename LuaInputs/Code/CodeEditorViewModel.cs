@@ -2,12 +2,12 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
-using LuaInputs.Native;
 using Microsoft.Win32;
-using REghZyFramework.Utilities;
+using REghZy.MVVM.Commands;
+using REghZy.MVVM.ViewModels;
 
 namespace LuaInputs.Code {
-    public class CodeEditorViewModel : BaseViewModel {
+    public class CodeEditorViewModel : BaseViewModel, IConsole {
         private string filePath;
 
         private string codeText;
@@ -36,12 +36,27 @@ namespace LuaInputs.Code {
 
         public CodeEditorViewModel() {
             this.CodeText = "";
+            this.CodeText += "function onKey(key, isDown, keyName, scanCode, isExtended)\n";
+            this.CodeText += "    local stat = \"up\"\n";
+            this.CodeText += "    if isDown then\n";
+            this.CodeText += "        stat = \"down\"\n";
+            this.CodeText += "    end\n";
+            this.CodeText += "    local ex = \"no\"\n";
+            this.CodeText += "    if isExtended then\n";
+            this.CodeText += "        ex = \"yes\"\n";
+            this.CodeText += "    end\n";
+            this.CodeText += "\n";
+            this.CodeText += "    rz:PrintLine(keyName .. \" -> \" .. stat .. \" -> \" .. ex)\n";
+            this.CodeText += "    return true\n";
+            this.CodeText += "end\n";
+            this.CodeText += "\n";
+            this.CodeText += "rz:RegisterCallback(onKey)\n";
             this.ConsoleText = "";
-            this.OpenFileCommand = new Command(() => Open());
-            this.SaveFileCommand = new Command(() => Save());
-            this.SaveFileAsCommand = new Command(() => SaveAs());
-            this.ClearCodeCommand = new Command(() => this.CodeText = "");
-            this.ClearConsoleCommand = new Command(() => this.ConsoleText = "");
+            this.OpenFileCommand = new RelayCommand(Open);
+            this.SaveFileCommand = new RelayCommand(Save);
+            this.SaveFileAsCommand = new RelayCommand(SaveAs);
+            this.ClearCodeCommand = new RelayCommand(() => this.CodeText = "");
+            this.ClearConsoleCommand = new RelayCommand(() => this.ConsoleText = "");
         }
 
         public void WriteConsole(string message) {
@@ -50,6 +65,7 @@ namespace LuaInputs.Code {
 
         public void WriteConsoleLine(string message) {
             this.ConsoleText += (message + '\n');
+            ServiceLocator.ConsoleView.ScrollToBottom();
         }
 
         public void Open() {
@@ -95,6 +111,18 @@ namespace LuaInputs.Code {
                     MessageBox.Show($"[ERR004] Failed to save file: {e.Message}");
                 }
             }
+        }
+
+        public void Print(string text) {
+            WriteConsole(text);
+        }
+
+        public void PrintLine(string text) {
+            WriteConsoleLine(text);
+        }
+
+        public void Clear() {
+            this.ConsoleText = "";
         }
     }
 }

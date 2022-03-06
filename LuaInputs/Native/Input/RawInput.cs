@@ -1,13 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Windows.Input;
-using LuaInputs.OLD__NATIVE;
+using LuaInputs.LuaLang;
 
-namespace LuaInputs.Native {
+namespace LuaInputs.Native.Input {
     public class RawInput {
         private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
+
         private const int WH_KEYBOARD_LL = 13;
         private const int HC_ACTION = 0;
 
@@ -26,6 +25,8 @@ namespace LuaInputs.Native {
         /// </summary>
         public bool IsHookSetup { get; private set; }
 
+        private static LowLevelKeyboardProc KeyboardProc = null;
+
         public RawInput(Predicate<KeyEvent> callback) {
             this.callback = callback;
         }
@@ -34,17 +35,21 @@ namespace LuaInputs.Native {
         /// Hooks/Sets up this application for receiving keydown callbacks
         /// </summary>
         public void Hook() {
-            hookId = SetHook(HookCallback);
-            IsHookSetup = true;
+            KeyboardProc = this.HookCallback;
+            this.hookId = SetHook(KeyboardProc);
+            this.IsHookSetup = true;
         }
 
         /// <summary>
         /// Unhooks this application, stopping it from receiving keydown callbacks
         /// </summary>
         public void Unhook() {
-            UnhookWindowsHookEx(hookId);
-            IsHookSetup = false;
+            UnhookWindowsHookEx(this.hookId);
+            this.IsHookSetup = false;
         }
+
+        [DllImport("user32.dll")]
+        public static extern void keybd_event(byte vkey, byte scancode, uint dwFlags, UIntPtr dwExtraInfo);
 
         /// <summary>
         /// Sets up the Key Up/Down event hooks.
@@ -73,8 +78,8 @@ namespace LuaInputs.Native {
         /// <param name="isAltDown">Whether the ALT key was pressed during this key event</param>
         /// <param name="previousState">States if the given key was already down during the event (aka if it's a repeat character)</param>
         /// <param name="transisionState">States whether the event came from pressing a key, or releasing a key. Aka, up/true, down/false</param>
-        private bool ProcessKeyRaw(short vk, short repeat, byte scan, bool isExtended, bool isAltDown, bool previousState, bool transisionState) {
-            return this.callback(new KeyEvent(vk, repeat, scan, isExtended, isAltDown, previousState, transisionState));
+        private bool ProcessKeyRaw(uint type, KBDLLHOOKSTRUCT input) {
+            return this.callback(new KeyEvent(input.vkCode, input.scanCode, ((input.flags & KBDLLHOOKSTRUCTFlags.LLKHF_EXTENDED) != 0), (input.flags & KBDLLHOOKSTRUCTFlags.LLKHF_ALTDOWN) != 0, type));
         }
 
         /// <summary>
@@ -86,26 +91,16 @@ namespace LuaInputs.Native {
         /// <returns></returns>
         private IntPtr HookCallback(int nCode, IntPtr wParamPtr, IntPtr lParamPtr) {
             if (nCode < 0) {
-                return CallNextHookEx(hookId, nCode, wParamPtr, lParamPtr);
+                return CallNextHookEx(this.hookId, nCode, wParamPtr, lParamPtr);
             }
 
             if (nCode == HC_ACTION) {
-                uint wParam = (uint) wParamPtr;
-                uint lParam = (uint) lParamPtr;
-                short vk     = (short) (wParam & 0b00000000000000001111111111111111);
-                short repeat = (short) (lParam & 0b00000000000000001111111111111111);
-                byte scanCode = (byte) (lParam & 0b00000000111111110000000000000000);
-                bool extended =        (lParam & 0b00000001000000000000000000000000) == 1;
-                byte reserved = (byte) (lParam & 0b00011110000000000000000000000000);
-                bool context =         (lParam & 0b00100000000000000000000000000000) == 1;
-                bool prevKeyState =    (lParam & 0b01000000000000000000000000000000) == 1;
-                bool transitionState = (lParam & 0b10000000000000000000000000000000) == 1;
-                if (ProcessKeyRaw(vk, repeat, scanCode, extended, context, prevKeyState, transitionState)) {
-                    return (IntPtr) 1;
+                if (ProcessKeyRaw((uint)wParamPtr, (KBDLLHOOKSTRUCT)Marshal.PtrToStructure(lParamPtr, typeof(KBDLLHOOKSTRUCT)))) {
+                    return (IntPtr)1;
                 }
             }
 
-            return CallNextHookEx(hookId, nCode, wParamPtr, lParamPtr);
+            return CallNextHookEx(this.hookId, nCode, wParamPtr, lParamPtr);
         }
 
         #region Native Methods

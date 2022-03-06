@@ -25,18 +25,18 @@ namespace LuaInputs.OLD__NATIVE {
         }
 
         public void AddMessageFilter() {
-            if (null != _filter)
+            if (null != this._filter)
                 return;
 
-            _filter = new PreMessageFilter();
-            Application.AddMessageFilter(_filter);
+            this._filter = new PreMessageFilter();
+            Application.AddMessageFilter(this._filter);
         }
 
         public void RemoveMessageFilter() {
-            if (null == _filter)
+            if (null == this._filter)
                 return;
 
-            Application.RemoveMessageFilter(_filter);
+            Application.RemoveMessageFilter(this._filter);
         }
 
         public RawInput() {
@@ -48,7 +48,7 @@ namespace LuaInputs.OLD__NATIVE {
 
             _keyboardDriver = new RawKeyboard(parentHandle);
             _keyboardDriver.EnumerateDevices();
-            _devNotifyHandle = RegisterForDeviceNotifications(parentHandle);
+            this._devNotifyHandle = RegisterForDeviceNotifications(parentHandle);
         }
 
         static IntPtr RegisterForDeviceNotifications(IntPtr parent) {
@@ -99,7 +99,7 @@ namespace LuaInputs.OLD__NATIVE {
 
         public void Dispose() {
             GC.SuppressFinalize(this);
-            Win32.UnregisterDeviceNotification(_devNotifyHandle);
+            Win32.UnregisterDeviceNotification(this._devNotifyHandle);
         }
 
         private class PreMessageFilter : IMessageFilter {
@@ -114,7 +114,7 @@ namespace LuaInputs.OLD__NATIVE {
         }
 
         ~RawInput() {
-            Win32.UnregisterDeviceNotification(_devNotifyHandle);
+            Win32.UnregisterDeviceNotification(this._devNotifyHandle);
         }
     }
 }

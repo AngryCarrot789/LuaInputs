@@ -13,12 +13,12 @@ namespace LuaInputs.OLD__NATIVE {
         public string KeyPressState;    // MAKE or BREAK
 
         public string Source {
-            get { return _source; }
-            set { _source = string.Format("Keyboard_{0}", value.PadLeft(2, '0')); }
+            get { return this._source; }
+            set { this._source = string.Format("Keyboard_{0}", value.PadLeft(2, '0')); }
         }
 
         public override string ToString() {
-            return string.Format("Device\n DeviceName: {0}\n DeviceType: {1}\n DeviceHandle: {2}\n Name: {3}\n", DeviceName, DeviceType, DeviceHandle.ToInt64().ToString("X"), Name);
+            return string.Format("Device\n DeviceName: {0}\n DeviceType: {1}\n DeviceHandle: {2}\n Name: {3}\n", this.DeviceName, this.DeviceType, this.DeviceHandle.ToInt64().ToString("X"), this.Name);
         }
     }
 }
